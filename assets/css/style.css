@@ -1,0 +1,55 @@
+body {
+	margin-top: 75px;
+	background: #428bca;
+}
+
+.todo-task {
+	border-radius: 5px;
+	background: #f5f5f5;
+	margin: 0 0 15px 0;
+	padding: 10px;
+	z-index: 100;
+}
+
+.todo-task:last-child {
+	margin: 0;
+}
+
+.todo-task:active {
+	cursor: move;
+}
+
+.todo-task > .task-header {
+	font-weight: bold;
+
+	min-height: 20px;
+}
+
+.todo-task > .task-date {
+	font-size: small;
+	font-style: italic;
+
+	min-height: 20px;
+}
+
+.todo-task > .task-description {
+	font-size: smaller;
+
+	min-height: 20px;
+}
+
+.task-list {
+	min-height: 20px;
+}
+
+#delete-div {
+	display: none;
+	background: #fff;
+	opacity: 0.5;
+	border-radius: 5px;
+	height: 75px;
+	line-height: 75px;
+	text-align: center;
+
+	z-index: 0;
+}
