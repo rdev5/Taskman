@@ -85,6 +85,7 @@ function taskmanSetup() {
 		var panel = $('#' + p);
 		panel.sortable({
 			connectWith: '.task-list',
+			placeholder: 'ui-state-highlight',
 
 			stop: function(event, ui) {
 				// Update indexes on all children
