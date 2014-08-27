@@ -3,6 +3,17 @@ body {
 	background: #428bca;
 }
 
+footer {
+	margin-top: 15px;
+	padding-top: 15px;
+	color: #7DBDF5;
+	border-top: 1px solid #5F9BCF;
+}
+
+footer a {
+	color: #D2E8FC;
+}
+
 .todo-task {
 	border-radius: 5px;
 	background: #f5f5f5;
