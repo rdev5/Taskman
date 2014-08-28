@@ -1,9 +1,13 @@
 var defaults = {
+	dataTasks: 'taskmanTasks',
+	dataPanels: 'taskmanPanels',
+	defaultPanel: 'pending',
 	todoTask: 'todo-task',
 	todoHeader: 'task-header',
 	todoDate: 'task-date',
 	todoDescription: 'task-description',
 	taskId: 'task-',
+	panelId: 'panel-',
 	formId: 'todo-form',
 	dataAttribute: 'data',
 	deleteDiv: 'delete-div'
@@ -25,10 +29,23 @@ var panels = {
 	}
 };
 
-function collectEntropy() {
+var collectEntropy = function() {
 	$('body').mousemove(function(e) {
 		entropy += e.pageX.toString() + e.pageY.toString();
 	});
+}
+
+// Central data save/load functions (useful to send to multiple sources)
+var saveData = function(key, data) {
+
+	// localStorage
+	localStorage.setItem(key, JSON.stringify(data));
+}
+
+var loadData = function(key) {
+	var data = localStorage.getItem(key);
+
+	return data ? JSON.parse(data) : {};
 }
 
 // guid() - http://stackoverflow.com/a/105074/901156
@@ -44,17 +61,60 @@ var guid = (function() {
   };
 })();
 
-function generatePanel(id) {
-	var data = panels[id];
+var generateElement = function(params) {
+	var parent = $('#' + params.parent);
+
+	if (!parent) {
+		return;
+	}
+
+	var wrapper = $('<div />', {
+		'class': defaults.todoTask,
+		'id': defaults.taskId + params.id,
+		'data': params.id
+	}).appendTo(parent);
+
+	/*
+	wrapper.draggable({
+		start: function(event, ui) {
+			$('#' + defaults.deleteDiv).show();
+		},
+		stop: function(event, ui) {
+			$('#' + defaults.deleteDiv).hide();
+		}
+	});
+	*/
+
+	$('<div />', {
+		'class': defaults.todoHeader,
+		'text': params.title
+	}).appendTo(wrapper);
+
+	$('<div />', {
+		'class': defaults.todoDate,
+		'text': date_display(params.date) // time_remaining(params.date)
+	}).appendTo(wrapper);
+
+	$('<div />', {
+		'class': defaults.todoDescription,
+		'text': params.description
+	}).appendTo(wrapper);
+}
+
+var generatePanel = function(panel) {
+	panel.id = panel.id.replace(defaults.panelId, '');
+
+	var data = panels[panel.id];
 	var parent = $('#panels');
 
-	var panel = $('<div />', {
-		'class': 'col-md-4'
+	var panel_container = $('<div />', {
+		'class': 'col-md-4 task-container',
+		'id': 'panel-' + panel.id
 	}).appendTo(parent);
 
 	var list = $('<div />', {
 		'class': 'panel panel-default'
-	}).appendTo(panel);
+	}).appendTo(panel_container);
 
 	$('<div />', {
 		'class': 'panel-heading',
@@ -63,52 +123,82 @@ function generatePanel(id) {
 
 	$('<div />', {
 		'class': 'panel-body task-list',
-		'id': id,
+		'id': panel.id,
 	}).appendTo(list);
 }
 
-function taskmanSetup() {
-	// Collect entropy
-	collectEntropy();
+var savePanelOrder = function(event, ui) {
+	// Update indexes on all children
+	var children = ui.item.parent().find('.task-container');
 
-	defaultFocus();
+	for (var i = 0; i < children.length; i++) {
+		var panel_id = children[i].id;
+		var panel = getPanel(panel_id);
 
-	// Initialize panels
+		panel.index = i;
+		
+		savePanel(panel);
+	}
+}
+
+var saveTaskOrder = function(event, ui) {
+	// Update indexes on all children
+	var children = ui.item.parent().find('.todo-task');
+
+	for (var i = 0; i < children.length; i++) {
+		var task_id = children[i].id;
+		var task = getTask(task_id);
+
+		task.index = i;
+		task.parent = ui.item.parent().attr('id');
+		
+		saveTask(task);
+	}
+}
+
+// Initialize panels and tasks
+var loadPanels = function() {
 	var panel_ids = [];
-	var tasks = loadData();
+	var tasks = loadData(defaults.dataTasks);
+	var panels = loadData(defaults.dataPanels);
+
+	// Sort and load panels
+	var panels_sorted = [];
+	for (var t in panels) {
+		var panel = panels[t];
+
+		panels_sorted.push([panel.id, panel.index]);
+	}
+
+	if (panels_sorted.length > 0) {
+		// Sort
+		panels_sorted.sort(function(a, b) {
+			return a[1] - b[1];
+		});
+
+		for (var t = 0; t < panels_sorted.length; t++) {
+			var panel_id = panels_sorted[t][0];
+			var panel = panels[panel_id];
+			
+			generatePanel(panel);
+		}
+	}
 
 	for (var p in panels) {
-		// Generate panel container
-		generatePanel(p);
+		p = p.replace(defaults.panelId, '');
 
-		// Enable sortable widget
-		var panel = $('#' + p);
-		panel.sortable({
-			connectWith: '.task-list',
-			placeholder: 'ui-state-highlight',
+		// Enable sortable task-container
+		$('#panels').sortable({ stop: savePanelOrder }).disableSelection;
 
-			stop: function(event, ui) {
-				// Update indexes on all children
-				var children = ui.item.parent().find('.todo-task');
-
-				for (var i = 0; i < children.length; i++) {
-					var task_id = children[i].id;
-					var task = getTask(task_id);
-
-					task.index = i;
-					task.parent = ui.item.parent().attr('id');
-					
-					saveTask(task);
-				}
-			}
-		}).disableSelection();
+		// Enable sortable task-list
+		$('#' + p).sortable({ connectWith: '.task-list', placeholder: 'ui-state-highlight', stop: saveTaskOrder }).disableSelection();
 
 		// Sort and load tasks
 		var tasks_sorted = [];
 		for (var t in tasks) {
 			var task = tasks[t];
 
-			if (task.parent != p) {
+			if (task.parent != p.replace(defaults.panelId, '')) {
 				continue;
 			}
 
@@ -124,7 +214,7 @@ function taskmanSetup() {
 			for (var t = 0; t < tasks_sorted.length; t++) {
 				var task_id = tasks_sorted[t][0];
 				var task = tasks[task_id];
-				
+
 				generateElement(task);
 			}
 		}
@@ -140,6 +230,17 @@ function taskmanSetup() {
 			deleteTask(task);
 		}
 	});
+}
+
+var taskmanSetup = function() {
+	// Collect entropy
+	collectEntropy();
+
+	// Set cursor focus
+	defaultFocus();
+
+	// Load panels
+	loadPanels();
 
 	// Bind to form
 	$('#' + defaults.formId).submit(function() {
@@ -163,7 +264,7 @@ function taskmanSetup() {
 	});
 }
 
-function taskInlineEdit(f, self) {
+var taskInlineEdit = function(f, self) {
 
 	// Don't update if already in edit mode
 	if (self.hasClass('editing')) {
@@ -216,11 +317,11 @@ function taskInlineEdit(f, self) {
 	});
 }
 
-function defaultFocus() {
+var defaultFocus = function() {
 	$('#todo-form').find('input[name=title]').first().focus();
 }
 
-function taskInlineCommit(field, self) {
+var taskInlineCommit = function(field, self) {
 	if (!self.hasClass('editing')) {
 		return;
 	}
@@ -236,11 +337,11 @@ function taskInlineCommit(field, self) {
 	saveTask(task);
 }
 
-function pluralize(s, n) {
+var pluralize = function(s, n) {
 	return n + ' ' + ((n !== 1) ? s.pluralize() : s);
 }
 
-function time_remaining(d) {
+var time_remaining = function(d) {
 	var date = moment(d);
 	var date_format = (date.get('year') == moment().get('year')) ? 'MMM D' : 'MMM D, YYYY';
 	var days_remaining = Math.floor(moment.duration(date.diff(moment())).asDays());
@@ -261,48 +362,8 @@ function time_remaining(d) {
 	return result;
 }
 
-function date_display(d) {
-	return moment(d).format('M/D');
-}
-
-var generateElement = function(params) {
-	var parent = $('#' + params.parent);
-
-	if (!parent) {
-		return;
-	}
-
-	var wrapper = $('<div />', {
-		'class': defaults.todoTask,
-		'id': defaults.taskId + params.id,
-		'data': params.id
-	}).appendTo(parent);
-
-	/*
-	wrapper.draggable({
-		start: function(event, ui) {
-			$('#' + defaults.deleteDiv).show();
-		},
-		stop: function(event, ui) {
-			$('#' + defaults.deleteDiv).hide();
-		}
-	});
-	*/
-
-	$('<div />', {
-		'class': defaults.todoHeader,
-		'text': params.title
-	}).appendTo(wrapper);
-
-	$('<div />', {
-		'class': defaults.todoDate,
-		'text': date_display(params.date) // time_remaining(params.date)
-	}).appendTo(wrapper);
-
-	$('<div />', {
-		'class': defaults.todoDescription,
-		'text': params.description
-	}).appendTo(wrapper);
+var date_display = function(d) {
+	return moment(d).isValid() ? moment(d).format('M/D') : d;
 }
 
 var removeElement = function(task) {
@@ -311,48 +372,50 @@ var removeElement = function(task) {
 	task.remove();
 }
 
-var loadData = function() {
-	var data = localStorage.getItem('todoData');
+var getTask = function(id) {
+	var data = loadData(defaults.dataTasks);
 
-	if (!data) {
-		data = '{}';
-	}
-
-	return JSON.parse(data);
-}
-
-var saveData = function(data) {
-	localStorage.setItem('todoData', JSON.stringify(data));
+	return data[id.replace(defaults.taskId, '')];
 }
 
 var saveTask = function(task) {
-	var data = loadData();
+	var data = loadData(defaults.dataTasks);
 	data[task.id] = task;
 
-	saveData(data);
+	saveData(defaults.dataTasks, data);
+
+	return data;
+}
+
+var getPanel = function(id) {
+	var panel_id = id.replace(defaults.panelId, '');
+	var data = loadData(defaults.dataPanels);
+
+	return data[panel_id] ? data[panel_id] : { id: id };
+}
+
+var savePanel = function(panel) {
+	var data = loadData(defaults.dataPanels);
+	data[panel.id] = panel;
+
+	saveData(defaults.dataPanels, data);
 
 	return data;
 }
 
 var deleteTask = function(task) {
-	var data = loadData();
+	var data = loadData(defaults.dataTasks);
 
 	if (data[task.id]) {
 		delete data[task.id];
 
-		saveData(data);
+		saveData(defaults.dataTasks, data);
 	}
 
 	// Remove from view
 	removeElement(task);
 
 	return data;
-}
-
-var getTask = function(id) {
-	var data = loadData();
-
-	return data[id.replace(defaults.taskId, '')];
 }
 
 var resetForm = function(id) {
@@ -374,7 +437,7 @@ var addItem = function() {
 
 	var task = {
 		id: id,
-		parent: 'pending',
+		parent: defaults.defaultPanel,
 		title: title,
 		date: date,
 		description: description
