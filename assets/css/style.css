@@ -57,7 +57,7 @@ footer a {
 	white-space: -pre-wrap;      /* Opera 4-6 */
 	white-space: -o-pre-wrap;    /* Opera 7 */
 	word-wrap: break-word;       /* Internet Explorer 5.5+ */
-	
+
 	min-height: 20px;
 }
 
@@ -66,13 +66,13 @@ footer a {
 }
 
 #delete-div {
-	display: none;
-	background: #fff;
-	opacity: 0.5;
 	border-radius: 5px;
 	height: 75px;
 	line-height: 75px;
 	text-align: center;
+
+	color: #fff;
+	border: 2px dashed #fff;
 
 	z-index: 0;
 }

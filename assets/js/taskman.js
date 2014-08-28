@@ -189,7 +189,7 @@ var loadPanels = function() {
 		$('#panels').sortable({ stop: savePanelOrder }).disableSelection;
 
 		// Enable sortable task-list
-		$('#' + p).sortable({ connectWith: '.task-list', placeholder: 'ui-state-highlight', stop: saveTaskOrder }).disableSelection();
+		$('#' + p).sortable({ connectWith: '.task-list', placeholder: 'ui-state-highlight', start: startTaskOrder, stop: saveTaskOrder }).disableSelection();
 
 		// Sort and load tasks
 		var tasks_sorted = [];
@@ -221,6 +221,10 @@ var loadPanels = function() {
 	// Delete tasks if dropped into delete-div
 	$('#' + options.deleteDiv).droppable({
 		drop: function(event, ui) {
+			if (!confirm('Are you sure?')) {
+				return;
+			}
+
 			var element = ui.helper;
 			var task = getTask(element.attr('id'));
 
@@ -228,6 +232,10 @@ var loadPanels = function() {
 			deleteTask(task);
 		}
 	});
+}
+
+var startTaskOrder = function(event, ui) {
+	
 }
 
 var taskmanSetup = function() {
