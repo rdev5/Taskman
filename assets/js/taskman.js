@@ -286,11 +286,12 @@ var taskInlineEdit = function(f, self) {
 	// Set field value
 	input.val(task[field]);
 
-	if (input_type = '<textarea />') {
-		input.css('font-size', '12px');
+	if (input_type == '<textarea />') {
+		input
+			.css('font-size', '12px')
+			.css('max-width', '100%')
+			.css('min-height', '100px');
 	}
-
-	console.log(input);
 
 	self.html(input);
 
@@ -303,9 +304,11 @@ var taskInlineEdit = function(f, self) {
 		var key = e.keyCode || e.which;
 
 		// Enter
-		if (key === 13) {
-			e.preventDefault();
-			defaultFocus();
+		if (input_type != '<textarea />') {
+			if (key === 13) {
+				e.preventDefault();
+				defaultFocus();
+			}
 		}
 
 		// Tab
