@@ -51,7 +51,7 @@ footer a {
 }
 
 .todo-task > .task-description {
-	font-size: smaller;
+	font-size: 12px;
 
 	min-height: 20px;
 }

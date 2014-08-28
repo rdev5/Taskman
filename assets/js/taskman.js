@@ -36,7 +36,38 @@ var loadData = function(key) {
 	return data ? JSON.parse(data) : {};
 }
 
-var generateTask = function(id, params) {
+var saveItem = function(id, value, prefix, key) {
+	id = id.replace(prefix, '');
+
+	var data = loadData(key);
+	data[id] = value;
+
+	saveData(key, data);
+}
+
+var saveItemOrder = function(root, event, ui, prefix, key) {
+	var children = ui.item.parent().find(root);
+
+	for (var i = 0; i < children.length; i++) {
+		var id = children[i].id;
+		var item = getItem(id, prefix, key);
+
+		item.index = i;
+		item.parent = ui.item.parent().attr('id');
+		
+		saveItem(id, item, prefix, key);
+	}
+}
+
+var getItem = function(id, prefix, key) {
+	id = id.replace(prefix, '');
+
+	var data = loadData(key);
+
+	return data[id] ? data[id] : { id: id };
+}
+
+var createTaskElement = function(id, params) {
 	var parent = $('#' + params.parent);
 
 	if (!parent) {
@@ -65,7 +96,13 @@ var generateTask = function(id, params) {
 	}).appendTo(wrapper);
 }
 
-var generatePanel = function(id, panel) {
+var removeTaskElement = function(task) {
+	var task = $('#' + options.taskId + task.id);
+
+	task.remove();
+}
+
+var createPanelElement = function(id, panel) {
 	var parent = $('#panels');
 
 	var panel_container = $('<div />', {
@@ -88,34 +125,26 @@ var generatePanel = function(id, panel) {
 	}).appendTo(list);
 }
 
-var savePanelOrder = function(event, ui) {
-	// Update indexes on all children
-	var children = ui.item.parent().find('.task-container');
+var getTask = function(id) { return getItem(id, options.taskId, options.dataTasks); }
+var saveTask = function(id, task) { saveItem(id, task, options.taskId, options.dataTasks); }
+var saveTaskOrder = function(event, ui) { saveItemOrder('.todo-task', event, ui, options.taskId, options.dataTasks); }
 
-	for (var i = 0; i < children.length; i++) {
-		var panel_id = children[i].id.replace(options.panelId, '');
-		var panel = getPanel(panel_id);
+var deleteTask = function(task) {
+	var data = loadData(options.dataTasks);
 
-		panel.index = i;
-		
-		savePanel(panel_id, panel);
+	if (data[task.id]) {
+		delete data[task.id];
+
+		saveData(options.dataTasks, data);
 	}
+
+	// Remove from view
+	removeTaskElement(task);
 }
 
-var saveTaskOrder = function(event, ui) {
-	// Update indexes on all children
-	var children = ui.item.parent().find('.todo-task');
-
-	for (var i = 0; i < children.length; i++) {
-		var task_id = children[i].id;
-		var task = getTask(task_id);
-
-		task.index = i;
-		task.parent = ui.item.parent().attr('id');
-
-		saveTask(task_id, task);
-	}
-}
+var getPanel = function(id) { return getItem(id, options.panelId, options.dataPanels); }
+var savePanel = function(id, panel) { saveItem(id, panel, options.panelId, options.dataPanels); }
+var savePanelOrder = function(event, ui) { saveItemOrder('.task-container', event, ui, options.panelId, options.dataPanels); }
 
 // Initialize panels and tasks
 var loadPanels = function() {
@@ -149,7 +178,7 @@ var loadPanels = function() {
 			var panel_id = panels_sorted[t][0];
 			var panel = panels[panel_id];
 
-			generatePanel(panel_id, panel);
+			createPanelElement(panel_id, panel);
 		}
 	}
 
@@ -184,7 +213,7 @@ var loadPanels = function() {
 				var task_id = tasks_sorted[t][0];
 				var task = tasks[task_id];
 
-				generateTask(task_id, task);
+				createTaskElement(task_id, task);
 			}
 		}
 	}
@@ -226,7 +255,7 @@ var taskmanSetup = function() {
 
 	// Bind to task items for inline editing
 	$('.task-description').click(function() {
-		taskInlineEdit({'description' : 'Description'}, $(this));
+		taskInlineEdit({'description' : 'Description', 'input': '<textarea />'}, $(this));
 	});
 }
 
@@ -246,12 +275,22 @@ var taskInlineEdit = function(f, self) {
 	var task_id = self.parent().attr('id');
 	var task = getTask(task_id);
 
-	var input = $('<input />', {
+	var input_type = f.input ? f.input : '<input />';
+
+	var input = $(input_type, {
 		'name': field,
 		'placeholder': placeholder,
 		'class': 'form-control',
-		'value': task[field]
 	});
+
+	// Set field value
+	input.val(task[field]);
+
+	if (input_type = '<textarea />') {
+		input.css('font-size', '12px');
+	}
+
+	console.log(input);
 
 	self.html(input);
 
@@ -292,7 +331,7 @@ var taskInlineCommit = function(field, self) {
 		return;
 	}
 
-	var input = self.find('input[name=' + field + ']').first();
+	var input = self.find(':input[name=' + field + ']').first();
 	var task_id = self.parent().attr('id');
 
 	self.text(input.val()).removeClass('editing');
@@ -301,10 +340,6 @@ var taskInlineCommit = function(field, self) {
 	task[field] = input.val();
 
 	saveTask(task_id, task);
-}
-
-var pluralize = function(s, n) {
-	return n + ' ' + ((n !== 1) ? s.pluralize() : s);
 }
 
 var time_remaining = function(d) {
@@ -330,56 +365,6 @@ var time_remaining = function(d) {
 
 var date_display = function(d) {
 	return moment(d).isValid() ? moment(d).format('M/D') : d;
-}
-
-var removeElement = function(task) {
-	var task = $('#' + options.taskId + task.id);
-
-	task.remove();
-}
-
-var getTask = function(id) {
-	return getItem(id, options.taskId, options.dataTasks);
-}
-
-var getPanel = function(id) {
-	return getItem(id, options.panelId, options.dataPanels);
-}
-
-var getItem = function(id, prefix, key) {
-	var data = loadData(key);
-	id = id.replace(prefix, '');
-
-	return data[id] ? data[id] : { id: id };
-}
-
-var saveTask = function(id, task) {
-	id = id.replace(options.taskId, '');
-	
-	var data = loadData(options.dataTasks);
-	data[id] = task;
-
-	saveData(options.dataTasks, data);
-}
-
-var savePanel = function(id, panel) {
-	var data = loadData(options.dataPanels);
-	data[id] = panel;
-
-	saveData(options.dataPanels, data);
-}
-
-var deleteTask = function(task) {
-	var data = loadData(options.dataTasks);
-
-	if (data[task.id]) {
-		delete data[task.id];
-
-		saveData(options.dataTasks, data);
-	}
-
-	// Remove from view
-	removeElement(task);
 }
 
 var resetForm = function(id) {
@@ -411,7 +396,7 @@ var addItem = function() {
 	saveTask(task.id, task);
 
 	// Generate
-	generateTask(task);
+	createTaskElement(task);
 
 	// Reset form
 	resetForm('#' + options.formId);
