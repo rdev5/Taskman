@@ -1,4 +1,4 @@
-var defaults = {
+var options = {
 	dataTasks: 'taskmanTasks',
 	dataPanels: 'taskmanPanels',
 	defaultPanel: 'pending',
@@ -10,35 +10,23 @@ var defaults = {
 	panelId: 'panel-',
 	formId: 'todo-form',
 	dataAttribute: 'data',
-	deleteDiv: 'delete-div'
-};
+	deleteDiv: 'delete-div',
+	defaultPanels: {
+		pending: {
+			label: 'Pending'
+		},
 
-var entropy;
+		inProgress: {
+			label: 'In Progress'
+		},
 
-var panels = {
-	pending: {
-		label: 'Pending'
-	},
-
-	inProgress: {
-		label: 'In Progress'
-	},
-
-	completed: {
-		label: 'Completed'
+		completed: {
+			label: 'Completed'
+		}
 	}
 };
 
-var collectEntropy = function() {
-	$('body').mousemove(function(e) {
-		entropy += e.pageX.toString() + e.pageY.toString();
-	});
-}
-
-// Central data save/load functions (useful to send to multiple sources)
 var saveData = function(key, data) {
-
-	// localStorage
 	localStorage.setItem(key, JSON.stringify(data));
 }
 
@@ -48,20 +36,7 @@ var loadData = function(key) {
 	return data ? JSON.parse(data) : {};
 }
 
-// guid() - http://stackoverflow.com/a/105074/901156
-var guid = (function() {
-  function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-               .toString(16)
-               .substring(1);
-  }
-  return function() {
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-           s4() + '-' + s4() + s4() + s4();
-  };
-})();
-
-var generateElement = function(params) {
+var generateTask = function(id, params) {
 	var parent = $('#' + params.parent);
 
 	if (!parent) {
@@ -69,47 +44,33 @@ var generateElement = function(params) {
 	}
 
 	var wrapper = $('<div />', {
-		'class': defaults.todoTask,
-		'id': defaults.taskId + params.id,
-		'data': params.id
+		'class': options.todoTask,
+		'id': options.taskId + id,
+		'data': id
 	}).appendTo(parent);
 
-	/*
-	wrapper.draggable({
-		start: function(event, ui) {
-			$('#' + defaults.deleteDiv).show();
-		},
-		stop: function(event, ui) {
-			$('#' + defaults.deleteDiv).hide();
-		}
-	});
-	*/
-
 	$('<div />', {
-		'class': defaults.todoHeader,
+		'class': options.todoHeader,
 		'text': params.title
 	}).appendTo(wrapper);
 
 	$('<div />', {
-		'class': defaults.todoDate,
+		'class': options.todoDate,
 		'text': date_display(params.date) // time_remaining(params.date)
 	}).appendTo(wrapper);
 
 	$('<div />', {
-		'class': defaults.todoDescription,
+		'class': options.todoDescription,
 		'text': params.description
 	}).appendTo(wrapper);
 }
 
-var generatePanel = function(panel) {
-	panel.id = panel.id.replace(defaults.panelId, '');
-
-	var data = panels[panel.id];
+var generatePanel = function(id, panel) {
 	var parent = $('#panels');
 
 	var panel_container = $('<div />', {
 		'class': 'col-md-4 task-container',
-		'id': 'panel-' + panel.id
+		'id': 'panel-' + id
 	}).appendTo(parent);
 
 	var list = $('<div />', {
@@ -118,12 +79,12 @@ var generatePanel = function(panel) {
 
 	$('<div />', {
 		'class': 'panel-heading',
-		'html': '<h3 class="panel-title">' + data.label + '</h3>'
+		'html': '<h3 class="panel-title">' + panel.label + '</h3>'
 	}).appendTo(list);
 
 	$('<div />', {
 		'class': 'panel-body task-list',
-		'id': panel.id,
+		'id': id,
 	}).appendTo(list);
 }
 
@@ -132,12 +93,12 @@ var savePanelOrder = function(event, ui) {
 	var children = ui.item.parent().find('.task-container');
 
 	for (var i = 0; i < children.length; i++) {
-		var panel_id = children[i].id;
+		var panel_id = children[i].id.replace(options.panelId, '');
 		var panel = getPanel(panel_id);
 
 		panel.index = i;
 		
-		savePanel(panel);
+		savePanel(panel_id, panel);
 	}
 }
 
@@ -151,23 +112,31 @@ var saveTaskOrder = function(event, ui) {
 
 		task.index = i;
 		task.parent = ui.item.parent().attr('id');
-		
-		saveTask(task);
+
+		saveTask(task_id, task);
 	}
 }
 
 // Initialize panels and tasks
 var loadPanels = function() {
 	var panel_ids = [];
-	var tasks = loadData(defaults.dataTasks);
-	var panels = loadData(defaults.dataPanels);
+	var tasks = loadData(options.dataTasks);
+	var panels = loadData(options.dataPanels);
+
+	if (Object.keys(panels).length === 0) {
+		panels = options.defaultPanels;
+
+		for (var p in panels) {
+			savePanel(p, panels[p]);
+		}
+	}
 
 	// Sort and load panels
 	var panels_sorted = [];
 	for (var t in panels) {
 		var panel = panels[t];
 
-		panels_sorted.push([panel.id, panel.index]);
+		panels_sorted.push([t, panel.index]);
 	}
 
 	if (panels_sorted.length > 0) {
@@ -179,13 +148,13 @@ var loadPanels = function() {
 		for (var t = 0; t < panels_sorted.length; t++) {
 			var panel_id = panels_sorted[t][0];
 			var panel = panels[panel_id];
-			
-			generatePanel(panel);
+
+			generatePanel(panel_id, panel);
 		}
 	}
 
 	for (var p in panels) {
-		p = p.replace(defaults.panelId, '');
+		p = p.replace(options.panelId, '');
 
 		// Enable sortable task-container
 		$('#panels').sortable({ stop: savePanelOrder }).disableSelection;
@@ -198,7 +167,7 @@ var loadPanels = function() {
 		for (var t in tasks) {
 			var task = tasks[t];
 
-			if (task.parent != p.replace(defaults.panelId, '')) {
+			if (task.parent != p.replace(options.panelId, '')) {
 				continue;
 			}
 
@@ -215,13 +184,13 @@ var loadPanels = function() {
 				var task_id = tasks_sorted[t][0];
 				var task = tasks[task_id];
 
-				generateElement(task);
+				generateTask(task_id, task);
 			}
 		}
 	}
 
 	// Delete tasks if dropped into delete-div
-	$('#' + defaults.deleteDiv).droppable({
+	$('#' + options.deleteDiv).droppable({
 		drop: function(event, ui) {
 			var element = ui.helper;
 			var task = getTask(element.attr('id'));
@@ -233,9 +202,6 @@ var loadPanels = function() {
 }
 
 var taskmanSetup = function() {
-	// Collect entropy
-	collectEntropy();
-
 	// Set cursor focus
 	defaultFocus();
 
@@ -243,7 +209,7 @@ var taskmanSetup = function() {
 	loadPanels();
 
 	// Bind to form
-	$('#' + defaults.formId).submit(function() {
+	$('#' + options.formId).submit(function() {
 		addItem();
 		return false;
 	});
@@ -334,7 +300,7 @@ var taskInlineCommit = function(field, self) {
 	var task = getTask(task_id);
 	task[field] = input.val();
 
-	saveTask(task);
+	saveTask(task_id, task);
 }
 
 var pluralize = function(s, n) {
@@ -367,55 +333,53 @@ var date_display = function(d) {
 }
 
 var removeElement = function(task) {
-	var task = $('#' + defaults.taskId + task.id);
+	var task = $('#' + options.taskId + task.id);
 
 	task.remove();
 }
 
 var getTask = function(id) {
-	var data = loadData(defaults.dataTasks);
-
-	return data[id.replace(defaults.taskId, '')];
-}
-
-var saveTask = function(task) {
-	var data = loadData(defaults.dataTasks);
-	data[task.id] = task;
-
-	saveData(defaults.dataTasks, data);
-
-	return data;
+	return getItem(id, options.taskId, options.dataTasks);
 }
 
 var getPanel = function(id) {
-	var panel_id = id.replace(defaults.panelId, '');
-	var data = loadData(defaults.dataPanels);
-
-	return data[panel_id] ? data[panel_id] : { id: id };
+	return getItem(id, options.panelId, options.dataPanels);
 }
 
-var savePanel = function(panel) {
-	var data = loadData(defaults.dataPanels);
-	data[panel.id] = panel;
+var getItem = function(id, prefix, key) {
+	var data = loadData(key);
+	id = id.replace(prefix, '');
 
-	saveData(defaults.dataPanels, data);
+	return data[id] ? data[id] : { id: id };
+}
 
-	return data;
+var saveTask = function(id, task) {
+	id = id.replace(options.taskId, '');
+	
+	var data = loadData(options.dataTasks);
+	data[id] = task;
+
+	saveData(options.dataTasks, data);
+}
+
+var savePanel = function(id, panel) {
+	var data = loadData(options.dataPanels);
+	data[id] = panel;
+
+	saveData(options.dataPanels, data);
 }
 
 var deleteTask = function(task) {
-	var data = loadData(defaults.dataTasks);
+	var data = loadData(options.dataTasks);
 
 	if (data[task.id]) {
 		delete data[task.id];
 
-		saveData(defaults.dataTasks, data);
+		saveData(options.dataTasks, data);
 	}
 
 	// Remove from view
 	removeElement(task);
-
-	return data;
 }
 
 var resetForm = function(id) {
@@ -437,18 +401,18 @@ var addItem = function() {
 
 	var task = {
 		id: id,
-		parent: defaults.defaultPanel,
+		parent: options.defaultPanel,
 		title: title,
 		date: date,
 		description: description
 	};
 
 	// Save
-	saveTask(task);
+	saveTask(task.id, task);
 
 	// Generate
-	generateElement(task);
+	generateTask(task);
 
 	// Reset form
-	resetForm('#' + defaults.formId);
+	resetForm('#' + options.formId);
 }
