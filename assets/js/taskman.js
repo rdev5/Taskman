@@ -29,6 +29,23 @@ var options = {
 var saveData = function(key, data) {
 	localStorage.setItem(key, JSON.stringify(data));
 	setCookie(key, JSON.stringify(data), 365);
+
+	createBackupData();
+}
+
+var createBackupData = function() {
+	var backup = {
+		panels: loadData(options.dataPanels),
+		tasks: loadData(options.dataTasks),
+	};
+
+	var backup_key = 'taskmanBackup-' + moment().format('YYYYMMDDHHmmss');
+	var backup_val = btoa(JSON.stringify(backup));
+
+	$('#backup-data').val(backup_val);
+	localStorage.setItem(backup_key, backup_val);
+
+	return backup;
 }
 
 var loadData = function(key) {
@@ -246,8 +263,6 @@ var taskmanSetup = function() {
 	// Load panels
 	loadPanels();
 
-	$('#backup-data').val(btoa(JSON.stringify(loadData(options.dataTasks))));
-
 	// Bind to form
 	$('#' + options.formId).submit(function() {
 		try {
@@ -258,8 +273,15 @@ var taskmanSetup = function() {
 		return false;
 	});
 
+	// Import/Export
+	createBackupData();
 	$('#import-form').submit(function() {
-		saveData(options.dataTasks, JSON.parse(atob($('textarea[name=import]').val())));
+		
+		var backup = JSON.parse(atob($('textarea[name=import]').val()));
+
+		saveData(options.dataTasks, backup.tasks);
+		saveData(options.dataPanels, backup.panels);
+
 		location.reload(false);
 		return false;
 	});
