@@ -145,7 +145,14 @@ var createPanelElement = function(id, panel) {
 
 var getTask = function(id) { return getItem(id, options.taskId, options.dataTasks); }
 var saveTask = function(id, task) { saveItem(id, task, options.taskId, options.dataTasks); }
-var saveTaskOrder = function(event, ui) { saveItemOrder('.todo-task', event, ui, options.taskId, options.dataTasks); }
+var saveTaskOrder = function(event, ui) {
+	saveItemOrder('.todo-task', event, ui, options.taskId, options.dataTasks);
+	
+	var task = getTask(ui.item.attr('id'));
+	if (task.parent == 'completed') {
+		ui.item.removeClass('notifyOn');
+	}
+}
 
 var deleteTask = function(task) {
 	var data = loadData(options.dataTasks);
@@ -271,12 +278,59 @@ var loadBackground = function() {
 	}
 }
 
+var lSpeed = 1000;
+var loop = function() {
+	setTimeout(loop, lSpeed);
+
+	loopTitle();
+	loopReminder();
+}
+
+var lTitle;
+var loopTitle = function() {
+	var title;
+
+	if (lTitle) {
+		title = ($('title').text() == lTitle[0]) ? lTitle[1] : lTitle[0];
+	} else {
+		title = 'Current time: ' + moment().format('h:mma');
+	}
+
+	$('title').text(title);
+}
+
+var lReminder;
+var loopReminder = function() {
+	var tasks = loadData(options.dataTasks);
+	for (var id in tasks) {
+		var task = tasks[id];
+
+		if (task.parent != 'completed' && moment(task.date).isValid()) {
+			var diff = moment(task.date).diff(moment());
+			var duration = moment.duration(diff);
+
+			if (duration.asHours() <= 1 && duration.asHours() > 0) {
+				var t = $('#' + options.taskId + task.id);
+
+				if (t.hasClass('notifyOn')) {
+					t.removeClass('notifyOn');
+				} else {
+					t.addClass('notifyOn');
+				}
+			}
+		}
+	}
+}
+
 var taskmanSetup = function() {
 	// Set cursor focus
 	defaultFocus();
 
 	// Load panels
 	loadPanels();
+
+	// Start timer loop
+	loop();
 
 	// Load background
 	loadBackground();
