@@ -134,7 +134,7 @@ var createPanelElement = function(id, panel) {
 
 	$('<div />', {
 		'class': 'panel-heading',
-		'html': '<h3 class="panel-title">' + panel.label + '</h3>'
+		'text': panel.label
 	}).appendTo(list);
 
 	$('<div />', {

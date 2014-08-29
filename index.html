@@ -56,6 +56,30 @@
 
     		<div class="collapse navbar-collapse">
 	        <ul class="nav navbar-nav">
+	          <li class="dropdown">
+	            <a class="dropdown-toggle" href="#" data-toggle="dropdown">Add Task <strong class="caret"></strong></a>
+	            <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px; width: 300px;">
+					    	<form id="todo-form" method="post">
+
+					    		<div class="form-group">
+					    			<input type="text" name="title" class="form-control" placeholder="Title" />
+					    		</div>
+
+					    		<div class="form-group">
+					    			<textarea name="description" class="form-control" placeholder="Description"></textarea>
+					    		</div>
+
+					    		<div class="form-group">
+					    			<input type="text" name="duedate" class="form-control" placeholder="Due date" />
+					    		</div>
+
+					    		<div class="form-group">
+					    			<button type="submit" class="btn btn-sm btn-primary">Add Task</button>
+					    			<button type="reset" class="btn btn-sm btn-default pull-right" onclick="javascript:defaultFocus();">Clear</button>
+					    		</div>
+					    	</form>
+	            </div>
+	          </li>
 	        	<li><a href="#" onclick="javascript:$('#backup').slideToggle('slow');">Import/Export</a></li>
 	        </ul>
 
@@ -93,31 +117,6 @@
 	  		</div>
 
 			  <div class="col-md-3">
-			    <div class="panel panel-default">
-			    	<div class="panel-heading"><h3 class="panel-title">Add Task</h3></div>
-				    <div class="panel-body">
-				    	<form id="todo-form" method="post">
-
-				    		<div class="form-group">
-				    			<input type="text" name="title" class="form-control" placeholder="Title" />
-				    		</div>
-
-				    		<div class="form-group">
-				    			<textarea name="description" class="form-control" placeholder="Description"></textarea>
-				    		</div>
-
-				    		<div class="form-group">
-				    			<input type="text" name="duedate" class="form-control" placeholder="Due date" />
-				    		</div>
-
-				    		<div class="form-group">
-				    			<button type="submit" class="btn btn-sm btn-primary">Add Task</button>
-				    			<button type="reset" class="btn btn-sm btn-default pull-right" onclick="javascript:defaultFocus();">Clear</button>
-				    		</div>
-				    	</form>
-				    </div>
-				  </div>
-
 				  <div id="delete-div" class="form-group task-list">Drag here to delete</div>
 				</div>
 			</div>
