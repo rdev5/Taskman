@@ -78,14 +78,20 @@ footer a {
 	border: 0;
 }
 
+textarea {
+	max-width: 100%;
+	min-height: 150px;
+}
+
 #delete-div {
 	border-radius: 5px;
 	height: 75px;
 	line-height: 75px;
 	text-align: center;
 
-	color: #fff;
-	border: 2px dashed #fff;
+	color: #555;
+	background-color: rgba(255, 255, 255, 0.50) !important;
+	border: 3px dashed #fff;
 
 	z-index: 0;
 }

@@ -296,10 +296,7 @@ var taskInlineEdit = function(f, self) {
 	input.val(task[field]);
 
 	if (input_type == '<textarea />') {
-		input
-			.css('font-size', '12px')
-			.css('max-width', '100%')
-			.css('min-height', '100px');
+		input.css('font-size', '12px');
 	}
 
 	self.html(input);
