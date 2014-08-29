@@ -51,11 +51,39 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#" onclick="javascript:about();">Taskman</a>
         </div>
 
     		<div class="collapse navbar-collapse">
 	        <ul class="nav navbar-nav">
+	          <li class="dropdown">
+	            <a class="navbar-brand dropdown-toggle" href="#" data-toggle="dropdown">TaskMan <strong class="caret"></strong></a>
+	            <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px; width: 800px;">
+
+		            <div class="row">
+		            	<div class="col-md-6">
+										<h4>Features</h4>
+						  			<ul class="list-unstyled list-group">
+						  				<li class="list-group-item"><strong>0 KB Bandwidth - </strong>Once the initial HTML 5 application has loaded, it runs entirely from your local cache.</li>
+						  				<li class="list-group-item"><strong>0 KB Data Theft - </strong>All data is stored and retrieved in your browser's <em>localStorage</em>. There is no data in transit and no data on the server to steal.</li>
+						  				<li class="list-group-item"><strong>Backup/Restore - </strong>Use the Import/Export option to backup and restore your panels and tasks quickly.</li>
+						  				<li class="list-group-item"><strong>Snapshot History - </strong>Every time you move a panel or modify a task, a snapshot (backup) is recorded in your browser's <em>localStorage</em> with a timestamp. Each snapshot contains export code that can be imported, enabling you to travel back in time.</li>
+						  			</ul>
+						  		</div>
+		            	<div class="col-md-6">
+			            	<h4>About</h4>
+										<p><strong>Taskman</strong> is a to-do list manager inspired by Trello, written in HTML5 using the following technologies:</p>
+
+										<ul class="list-unstyled">
+											<li>jQuery + UI</li>
+											<li>Bootstrap</li>
+											<li>Moment.js</li>
+											<li>Inflection-js</li>
+											<li>localStorage</li>
+										</ul>
+									</div>
+		            </div>
+		          </div>
+	          </li>
 	          <li class="dropdown">
 	            <a class="dropdown-toggle" href="#" data-toggle="dropdown">Add Task <strong class="caret"></strong></a>
 	            <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px; width: 300px;">
@@ -80,7 +108,40 @@
 					    	</form>
 	            </div>
 	          </li>
-	        	<li><a href="#" onclick="javascript:$('#backup').slideToggle('slow');">Import/Export</a></li>
+	        	<li class="dropdown">
+	        		<a class="dropdown-toggle" href="#" data-toggle="dropdown">Import/Export <strong class="caret"></strong></a>
+	        		<div class="dropdown-menu" style="padding-bottom: 0; width: 825px;">
+					  		<div class="row" style="margin: 0;">
+					  			<div class="col-md-6">
+							  		<div class="panel panel-default">
+										  <div class="panel-body">
+										    <form id="export-form" method="post">
+											    <p>To export your data, copy the text below to a file or email:</p>
+											    <div class="form-group">
+											    	<div class="form-group">
+											    		<textarea class="form-control" style="width: 100%; height: 100px; font-size: 12px; font-family: Courier New" id="backup-data" name="export" readonly="readonly"></textarea>
+											    	</div>
+											    </div>
+											  </form>
+										  </div>
+										</div>
+									</div>
+					  			<div class="col-md-6">
+							  		<div class="panel panel-default">
+										  <div class="panel-body">
+										    <form id="import-form" method="post">
+											    <p>To import your data, paste below and click <strong>Import</strong>:</p>
+											    <div class="form-group">
+											    	<textarea class="form-control" style="width: 100%; height: 100px; font-size: 12px; font-family: Courier New" id="restore-data" name="import"></textarea>
+											    </div>
+										    	<p class="text-right"><button type="submit" class="btn btn-sm btn-primary">Import</button></p>
+										    </form>
+										  </div>
+										</div>
+									</div>
+					  		</div>
+					  	</div>
+	        	</li>
 	        </ul>
 
 					<p class="navbar-text navbar-right"><a href="https://github.com/rdev5/Taskman" class="navbar-link">Download this project on GitHub</a></p>
@@ -89,28 +150,6 @@
     </div>
 
   	<div class="container">
-  		<div id="backup" class="row">
-  			<div class="col-md-6">
-		  		<div class="panel panel-default">
-					  <div class="panel-body">
-					    <p>To export your data, copy the text below to a file or email:</p>
-					    <textarea style="width: 100%; height: 100px; font-size: 12px; font-family: Courier New" id="backup-data" name="export" readonly="readonly"></textarea>
-					  </div>
-					</div>
-				</div>
-  			<div class="col-md-6">
-		  		<div class="panel panel-default">
-					  <div class="panel-body">
-					    <form id="import-form" method="post">
-						    <p>To import your data, paste below and click <strong>Import</strong>:</p>
-						    <textarea style="width: 100%; height: 100px; font-size: 12px; font-family: Courier New" id="restore-data" name="import"></textarea>
-					    	<p><button type="submit" class="btn btn-sm btn-primary">Import</button></p>
-					    </form>
-					  </div>
-					</div>
-				</div>
-  		</div>
-
   		<div class="row">
 				<div class="col-md-9">
 	  			<div class="row" id="panels"></div>

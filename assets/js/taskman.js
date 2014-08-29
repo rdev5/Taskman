@@ -26,19 +26,6 @@ var options = {
 	}
 };
 
-var about = function() {
-	var info = [];
-	info.push('Taskman is a to-do list manager inspired by Trello, written in HTML5 using the following technologies:');
-	info.push('');
-	info.push('jQuery + UI');
-	info.push('Bootstrap');
-	info.push('Moment.js');
-	info.push('Inflection-js');
-	info.push('localStorage');
-
-	alert(info.join("\n"));
-}
-
 var saveData = function(key, data) {
 	localStorage.setItem(key, JSON.stringify(data));
 	setCookie(key, JSON.stringify(data), 365);

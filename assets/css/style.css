@@ -64,6 +64,7 @@ footer a {
 }
 
 .todo-task > .task-header {
+	font-size: small;
 	font-weight: bold;
 
 	min-height: 20px;
@@ -99,6 +100,7 @@ footer a {
 .panel {
 	background-color: rgba(255, 255, 255, 0.75);
 	border: 0;
+	margin-bottom: 0;
 }
 
 .panel-body {
@@ -121,8 +123,8 @@ textarea {
 
 #delete-div {
 	border-radius: 5px;
-	height: 150px;
-	line-height: 150px;
+	height: 100px;
+	line-height: 100px;
 	text-align: center;
 
 	color: #555;
@@ -130,8 +132,4 @@ textarea {
 	border: 3px dashed #fff;
 
 	z-index: 0;
-}
-
-#backup {
-	display: none;
 }
