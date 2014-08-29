@@ -1,6 +1,14 @@
+html {
+	background: #428bca url('../image/background.jpg')  no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
 body {
+	background: none;
 	margin-top: 75px;
-	background: #428bca url('../image/background.jpg') no-repeat;
 }
 
 footer {
@@ -19,6 +27,24 @@ footer a {
 	border-radius: 5px;
 	height: 80px;
 	margin-bottom: 15px;
+}
+
+.shadow {
+  -moz-box-shadow:    1px 1px 0px 0px #ddd;
+  -webkit-box-shadow: 1px 1px 0px 0px #ddd;
+  box-shadow:         1px 1px 0px 0px #ddd;
+}
+
+.one-edge-shadow-slim {
+	-webkit-box-shadow: 0 4px 6px -6px #555;
+	   -moz-box-shadow: 0 4px 6px -6px #555;
+	        box-shadow: 0 4px 6px -6px #555;
+}
+
+.one-edge-shadow {
+	-webkit-box-shadow: 0 6px 6px -6px #555;
+	   -moz-box-shadow: 0 6px 6px -6px #555;
+	        box-shadow: 0 6px 6px -6px #555;
 }
 
 .todo-task {
@@ -51,11 +77,11 @@ footer a {
 }
 
 .todo-task:hover > .task-description {
-	display: block;
+	/* display: block; */
 }
 
 .todo-task > .task-description {
-	display: none;
+	/* display: none; */
 	font-size: 12px;
 	white-space: pre-wrap;       /* css-3 */
 	white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
@@ -72,6 +98,7 @@ footer a {
 
 .panel {
 	background-color: rgba(255, 255, 255, 0.75);
+	border: 0;
 }
 
 .panel-body {

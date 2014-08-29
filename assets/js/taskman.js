@@ -93,7 +93,7 @@ var createTaskElement = function(id, params) {
 	}
 
 	var wrapper = $('<div />', {
-		'class': options.todoTask,
+		'class': options.todoTask + ' one-edge-shadow-slim',
 		'id': options.taskId + id,
 		'data': id
 	}).appendTo(parent);
@@ -129,7 +129,7 @@ var createPanelElement = function(id, panel) {
 	}).appendTo(parent);
 
 	var list = $('<div />', {
-		'class': 'panel panel-default'
+		'class': 'panel panel-default one-edge-shadow'
 	}).appendTo(panel_container);
 
 	$('<div />', {
