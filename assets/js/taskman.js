@@ -304,20 +304,26 @@ var loopReminder = function() {
 	var tasks = loadData(options.dataTasks);
 	for (var id in tasks) {
 		var task = tasks[id];
+		var t = $('#' + options.taskId + task.id);
 
 		if (task.parent != 'completed' && moment(task.date).isValid()) {
 			var diff = moment(task.date).diff(moment());
 			var duration = moment.duration(diff);
 
-			if (duration.asHours() <= 1 && duration.asHours() > 0) {
-				var t = $('#' + options.taskId + task.id);
+			if (duration.asHours() <= 1) {
 
-				if (t.hasClass('notifyOn')) {
-					t.removeClass('notifyOn');
+				if (duration.asHours() > 0) {
+					if (t.hasClass('notifyOn')) {
+						t.removeClass('notifyOn');
+					} else {
+						t.addClass('notifyOn');
+					}
 				} else {
 					t.addClass('notifyOn');
 				}
 			}
+		} else {
+			t.removeClass('notifyOn');
 		}
 	}
 }
