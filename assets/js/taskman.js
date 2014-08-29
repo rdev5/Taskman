@@ -28,7 +28,7 @@ var options = {
 
 var saveData = function(key, data) {
 	localStorage.setItem(key, JSON.stringify(data));
-	setCookie(key, JSON.stringify(data), 365);
+	// setCookie(key, JSON.stringify(data), 365);
 
 	createBackupData();
 }
