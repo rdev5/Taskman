@@ -1,13 +1,13 @@
 body {
 	margin-top: 75px;
-	background: #428bca;
+	background: #428bca url('../image/background.jpg') no-repeat;
 }
 
 footer {
 	margin-top: 15px;
 	padding-top: 15px;
-	color: #7DBDF5;
-	border-top: 1px solid #5F9BCF;
+	color: #000;
+	border-top: 1px solid #000;
 }
 
 footer a {
@@ -63,6 +63,19 @@ footer a {
 
 .task-list {
 	min-height: 20px;
+}
+
+.panel {
+	background-color: rgba(255, 255, 255, 0.75);
+}
+
+.panel-default > .panel-heading {
+	background-color: rgba(255, 255, 255, 0.50);
+}
+
+.navbar-default {
+	background-color: rgba(255, 255, 255, 0.50) !important;
+	border: 0;
 }
 
 #delete-div {

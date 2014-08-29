@@ -28,6 +28,7 @@ var options = {
 
 var saveData = function(key, data) {
 	localStorage.setItem(key, JSON.stringify(data));
+	setCookie(key, JSON.stringify(data), 365);
 }
 
 var loadData = function(key) {
@@ -235,7 +236,7 @@ var loadPanels = function() {
 }
 
 var startTaskOrder = function(event, ui) {
-	
+
 }
 
 var taskmanSetup = function() {
