@@ -246,9 +246,21 @@ var taskmanSetup = function() {
 	// Load panels
 	loadPanels();
 
+	$('#backup-data').val(btoa(JSON.stringify(loadData(options.dataTasks))));
+
 	// Bind to form
 	$('#' + options.formId).submit(function() {
-		addItem();
+		try {
+			addItem();
+		} catch(e) {
+			console.log(e);
+		}
+		return false;
+	});
+
+	$('#import-form').submit(function() {
+		saveData(options.dataTasks, JSON.parse(atob($('textarea[name=import]').val())));
+		location.reload(false);
 		return false;
 	});
 
@@ -401,11 +413,12 @@ var addItem = function() {
 		description: description
 	};
 
+
 	// Save
 	saveTask(task.id, task);
 
 	// Generate
-	createTaskElement(task);
+	createTaskElement(task.id, task);
 
 	// Reset form
 	resetForm('#' + options.formId);

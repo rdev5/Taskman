@@ -54,42 +54,70 @@
           <a class="navbar-brand" href="">Taskman</a>
         </div>
 
+        <ul class="nav navbar-nav">
+        	<li><a href="#" onclick="javascript:$('#backup').slideToggle('slow');">Import/Export</a></li>
+        </ul>
+
 				<p class="navbar-text navbar-right"><a href="https://github.com/rdev5/Taskman" class="navbar-link">Download this project on GitHub</a></p>
       </div>
     </div>
 
   	<div class="container">
-			<div class="col-md-9">
-  			<div class="row" id="panels"></div>
+  		<div id="backup" class="row">
+  			<div class="col-md-6">
+		  		<div class="panel panel-default">
+					  <div class="panel-body">
+					    <p>To export your data, copy the text below to a file or email:</p>
+					    <textarea style="width: 100%; height: 100px; font-size: 12px; font-family: Courier New" id="backup-data" name="export" readonly="readonly"></textarea>
+					  </div>
+					</div>
+				</div>
+  			<div class="col-md-6">
+		  		<div class="panel panel-default">
+					  <div class="panel-body">
+					    <form id="import-form" method="post">
+						    <p>To import your data, paste below and click <strong>Import</strong>:</p>
+						    <textarea style="width: 100%; height: 100px; font-size: 12px; font-family: Courier New" id="restore-data" name="import"></textarea>
+					    	<p><button type="submit" class="btn btn-sm btn-primary">Import</button></p>
+					    </form>
+					  </div>
+					</div>
+				</div>
   		</div>
 
-		  <div class="col-md-3">
-		    <div class="panel panel-default">
-		    	<div class="panel-heading"><h3 class="panel-title">Add Task</h3></div>
-			    <div class="panel-body">
-			    	<form id="todo-form" method="post">
+  		<div class="row">
+				<div class="col-md-9">
+	  			<div class="row" id="panels"></div>
+	  		</div>
 
-			    		<div class="form-group">
-			    			<input type="text" name="title" class="form-control" placeholder="Title" />
-			    		</div>
+			  <div class="col-md-3">
+			    <div class="panel panel-default">
+			    	<div class="panel-heading"><h3 class="panel-title">Add Task</h3></div>
+				    <div class="panel-body">
+				    	<form id="todo-form" method="post">
 
-			    		<div class="form-group">
-			    			<textarea name="description" class="form-control" placeholder="Description"></textarea>
-			    		</div>
+				    		<div class="form-group">
+				    			<input type="text" name="title" class="form-control" placeholder="Title" />
+				    		</div>
 
-			    		<div class="form-group">
-			    			<input type="text" name="duedate" class="form-control" placeholder="Due date" />
-			    		</div>
+				    		<div class="form-group">
+				    			<textarea name="description" class="form-control" placeholder="Description"></textarea>
+				    		</div>
 
-			    		<div class="form-group">
-			    			<button type="submit" class="btn btn-sm btn-primary">Add Task</button>
-			    			<button type="reset" class="btn btn-sm btn-default pull-right" onclick="javascript:defaultFocus();">Clear</button>
-			    		</div>
-			    	</form>
-			    </div>
-			  </div>
+				    		<div class="form-group">
+				    			<input type="text" name="duedate" class="form-control" placeholder="Due date" />
+				    		</div>
 
-			  <div id="delete-div" class="form-group task-list">Drag here to delete</div>
+				    		<div class="form-group">
+				    			<button type="submit" class="btn btn-sm btn-primary">Add Task</button>
+				    			<button type="reset" class="btn btn-sm btn-default pull-right" onclick="javascript:defaultFocus();">Clear</button>
+				    		</div>
+				    	</form>
+				    </div>
+				  </div>
+
+				  <div id="delete-div" class="form-group task-list">Drag here to delete</div>
+				</div>
 			</div>
   	</div>
   </body>
