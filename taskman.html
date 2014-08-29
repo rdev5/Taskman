@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Cache-control" content="private" />
+
     <title>TaskMan</title>
 
     <!-- jQuery -->
@@ -63,10 +65,11 @@
 		            	<div class="col-md-6">
 										<h4>Features</h4>
 						  			<ul class="list-unstyled list-group">
-						  				<li class="list-group-item"><strong>0 KB Bandwidth - </strong>Once the initial HTML 5 application has loaded, it runs entirely from your local cache.</li>
-						  				<li class="list-group-item"><strong>0 KB Data Theft - </strong>All data is stored and retrieved in your browser's <em>localStorage</em>. There is no data in transit and no data on the server to steal.</li>
-						  				<li class="list-group-item"><strong>Backup/Restore - </strong>Use the Import/Export option to backup and restore your panels and tasks quickly.</li>
-						  				<li class="list-group-item"><strong>Snapshot History - </strong>Every time you move a panel or modify a task, a snapshot (backup) is recorded in your browser's <em>localStorage</em> with a timestamp. Each snapshot contains export code that can be imported, enabling you to travel back in time.</li>
+						  				<li class="list-group-item"><strong>0 KB Bandwidth -</strong> Once the initial HTML 5 application has loaded, it runs entirely from your local cache.</li>
+						  				<li class="list-group-item"><strong>0 KB Data Theft -</strong> All data is stored and retrieved in your browser's <em>localStorage</em>. There is no data in transit and no data on the server to steal.</li>
+						  				<li class="list-group-item"><strong>Backup/Restore -</strong> Use the Import/Export option to backup and restore your panels and tasks quickly.</li>
+						  				<li class="list-group-item"><strong>Snapshot History -</strong> Every time you move a panel or modify a task, a snapshot (backup) is recorded in your browser's <em>localStorage</em> with a timestamp. Each snapshot contains export code that can be imported, enabling you to travel back in time.</li>
+						  				<li class="list-group-item"><strong>Background Image -</strong> Set a custom background by specifying the URL of the image you wish to use.</li>
 						  			</ul>
 						  		</div>
 		            	<div class="col-md-6">
@@ -142,6 +145,17 @@
 					  		</div>
 					  	</div>
 	        	</li>
+	          <li class="dropdown">
+	            <a class="dropdown-toggle" href="#" data-toggle="dropdown">Settings <strong class="caret"></strong></a>
+	            <div class="dropdown-menu" style="padding: 15px; width: 600px;">
+					    	<form id="settings-form" class="form-inline" role="form" method="post">
+					    		<div class="form-group">
+					    			<input type="text" style="width: 400px;" name="background" class="form-control" placeholder="Image URL" />
+					    			<button type="submit" class="btn btn-sm btn-primary">Set Background</button>
+					    		</div>
+					    	</form>
+	            </div>
+	          </li>
 	        </ul>
 
 					<p class="navbar-text navbar-right"><a href="https://github.com/rdev5/Taskman" class="navbar-link">Download this project on GitHub</a></p>

@@ -256,6 +256,21 @@ var startTaskOrder = function(event, ui) {
 
 }
 
+var setBackground = function(url) {
+	localStorage.setItem('taskmanBackgroundUrl', url);
+
+	loadBackground();
+}
+
+var loadBackground = function() {
+	var background_url = localStorage.getItem('taskmanBackgroundUrl');
+	if (background_url) {
+		$('html').css('background-image', 'url(' + background_url + ')');
+
+		$('#settings-form').find('input[name=background]').first().val(background_url);
+	}
+}
+
 var taskmanSetup = function() {
 	// Set cursor focus
 	defaultFocus();
@@ -263,7 +278,22 @@ var taskmanSetup = function() {
 	// Load panels
 	loadPanels();
 
+	// Load background
+	loadBackground();
+
 	// Bind to form
+	$('#settings-form').submit(function() {
+
+		// Background URL
+		var background_url = $('input[name=background]').val();
+
+		if(background_url) {
+			setBackground(background_url);
+		}
+
+		return false;
+	});
+
 	$('#' + options.formId).submit(function() {
 		try {
 			addItem();
