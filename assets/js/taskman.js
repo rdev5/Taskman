@@ -306,7 +306,7 @@ var loopReminder = function() {
 		var task = tasks[id];
 		var t = $('#' + options.taskId + task.id);
 
-		if (task.parent != 'completed' && moment(task.date).isValid()) {
+		if (moment(task.date).isValid() && task.parent != 'completed') {
 			var diff = moment(task.date).diff(moment());
 			var duration = moment.duration(diff);
 
@@ -328,6 +328,16 @@ var loopReminder = function() {
 	}
 }
 
+var experimental = function() {
+	var plaintext = 'Sensitive data';
+	var passphrase = 'This is a demo. Prompt user for passphrase here.';
+
+	var ciphertext = CryptoJS.AES.encrypt(plaintext, passphrase);
+
+	var encoded = CryptoJS.enc.Hex.stringify(ciphertext.ciphertext);
+	console.log('Ciphertext: ' + encoded);
+}
+
 var taskmanSetup = function() {
 	// Set cursor focus
 	defaultFocus();
@@ -340,6 +350,9 @@ var taskmanSetup = function() {
 
 	// Load background
 	loadBackground();
+
+	// Experimental
+	experimental();
 
 	// Bind to form
 	$('#settings-form').submit(function() {
