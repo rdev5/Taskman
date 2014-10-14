@@ -42,10 +42,34 @@ console.log('[+] Listening on port ' + options.port);
 server.listen(options.port);
 
 // GET /tasks
-server.get('/tasks', function(req, res, next) {
+server.get('/tasks/:ids', function(req, res, next) {
   console.log('[+] GET /tasks');
 
-  res.send(200, 'get_tasks');
+  var csv = (req.params.ids).split(',');
+  var ids = [];
+  for (var i = 0; i < csv.length; i++) {
+    if (csv[i]) {
+      ids.push('task-' + csv[i]);
+    }
+  }
+
+  TaskModel.load(options.db, ids, function(err, results) {
+    if (err) {
+      console.log('[!] ' + err);
+      res.send(500, err);
+      return;
+    }
+
+    var tasks = {};
+
+    for (var k in results) {
+      if (!results[k].error) {
+        tasks[k] = results[k].value;
+      }
+    }
+
+    res.send(200, tasks);
+  });
 });
 
 // POST /tasks/save/:id

@@ -21,6 +21,16 @@ var guid = (function() {
   };
 })();
 
+var new_id = function(tasks) {
+  var id = 1;
+
+  while (id in tasks) {
+    id++;
+  }
+
+  return id;
+}
+
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
     d.setTime(d.getTime() + (exdays*24*60*60*1000));

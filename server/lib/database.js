@@ -8,6 +8,7 @@ var default_options = {
 function Database(options) {
   if (this instanceof Database) {
     this.options = options ? options : default_options;
+    this.couchbase = couchbase;
     this.reconnect();
   } else {
     return (new Database(options));

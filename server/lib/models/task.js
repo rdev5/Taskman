@@ -5,6 +5,34 @@ function TaskModel() {
 
 }
 
+TaskModel.load = function(db, task_ids, callback) {
+
+  if (!db.bucket.connected) return callback('Not connected (TaskModel#load)');
+
+  // Multiple: db.getMulti()
+  if (task_ids instanceof Array && task_ids.length > 0) {
+    db.bucket.getMulti(task_ids, function(count, results) {
+      return callback(null, results);
+    });
+  } else {
+    var query = db.couchbase.ViewQuery.from('keys', 'keys');
+    db.bucket.query(query, function(err, results) {
+      if (err) {
+        return callback(err);
+      }
+
+      var task_ids = [];
+      for (var i = 0; i < results.length; i++) {
+        task_ids.push(results[i].id);
+      }
+
+      db.bucket.getMulti(task_ids, function(count, results) {
+        return callback(null, results);
+      });
+    });
+  }
+}
+
 TaskModel.save = function(db, task, callback) {
 
   if (!db.connected) return callback('Not connected (TaskModel#save)');
