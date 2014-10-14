@@ -26,9 +26,24 @@ var options = {
 	}
 };
 
+var changeset = {};
+
 var saveData = function(key, data) {
 	localStorage.setItem(key, JSON.stringify(data));
 	// setCookie(key, JSON.stringify(data), 365);
+
+  // Send to Couchbase
+  for (var uid in data) {
+    var task = data[uid];
+    var hash = CryptoJS.SHA1(JSON.stringify(task)).toString(CryptoJS.enc.Hex);
+
+    if (!(uid in changeset) || changeset[uid] != hash) {
+      $.post('https://localhost:5000/tasks/save/' + uid, data[uid]);
+
+      // Update changeset hash table
+      changeset[uid] = hash;
+    }
+  }
 
 	createBackupData();
 }
@@ -331,11 +346,10 @@ var loopReminder = function() {
 var experimental = function() {
 	var plaintext = 'Sensitive data';
 	var passphrase = 'This is a demo. Prompt user for passphrase here.';
-
 	var ciphertext = CryptoJS.AES.encrypt(plaintext, passphrase);
-
 	var encoded = CryptoJS.enc.Hex.stringify(ciphertext.ciphertext);
-	console.log('Ciphertext: ' + encoded);
+
+  console.log('EXPERIMENTAL');
 }
 
 var taskmanSetup = function() {
