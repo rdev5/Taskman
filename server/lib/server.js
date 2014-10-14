@@ -3,7 +3,6 @@ var fs = require('fs');
 var restify = require('restify');
 var sanitize = require(__dirname + '/helpers/sanitize');
 var TaskModel = require(__dirname + '/models/task');
-var AccountModel = require(__dirname + '/models/account');
 var CORS = require(__dirname + '/helpers/cors');
 var Database = require('./database');
 
@@ -47,37 +46,6 @@ server.get('/tasks', function(req, res, next) {
   console.log('[+] GET /tasks');
 
   res.send(200, 'get_tasks');
-});
-
-// POST /register
-server.post('/register', function(req, res, next) {
-  console.log('[+] POST /register');
-
-  AccountModel.create(options.db.bucket, req.params, function(err, acct, cas) {
-    if (err) {
-      console.log('[!] ' + err);
-      res.send(500, err);
-      return;
-    }
-
-    res.send(200, acct);
-  });
-});
-
-// POST /login
-server.post('/login', function(req, res, next) {
-  console.log('[+] POST /login');
-
-  AccountModel.start_session(options.db.bucket, req.params, function(err, session_id) {
-    if (err) {
-      console.log('[!] ' + err);
-      res.send(500, err);
-      return;
-    }
-
-    res.setHeader('TaskMan-Auth', session_id);
-    res.send(200, 'Login successful!');
-  });
 });
 
 // POST /tasks/save/:id

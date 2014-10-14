@@ -26,7 +26,8 @@ var options = {
 	}
 };
 
-var changeset = {};
+// Track changes using SHA1 checksums save deltas
+var deltas = {};
 
 var saveData = function(key, data) {
 	localStorage.setItem(key, JSON.stringify(data));
@@ -37,11 +38,10 @@ var saveData = function(key, data) {
     var task = data[uid];
     var hash = CryptoJS.SHA1(JSON.stringify(task)).toString(CryptoJS.enc.Hex);
 
-    if (!(uid in changeset) || changeset[uid] != hash) {
+    if (!(uid in deltas) || deltas[uid] != hash) {
       $.post('https://localhost:5000/tasks/save/' + uid, data[uid]);
 
-      // Update changeset hash table
-      changeset[uid] = hash;
+      deltas[uid] = hash;
     }
   }
 
